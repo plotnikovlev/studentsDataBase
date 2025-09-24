@@ -55,6 +55,25 @@ void findStudentWithHighestGpa(const std::vector<Student>& database) {
     std::cout << "Средний балл: " << bestStudent->gpa << "\n\n";
 }
 
+// Функция для поиска студента с наинизшим средним баллом
+void findStudentWithLowestGpa(const std::vector<Student>& database) {
+    if (database.empty()) {
+        std::cout << "База данных пуста.\n";
+        return;
+    }
+
+    const Student* worstStudent = &database[0];
+    for (const Student& student : database) {
+        if (student.gpa < worstStudent->gpa) {
+            worstStudent = &student;
+        }
+    }
+
+    std::cout << "Студент с наинизшим средним баллом:\n";
+    std::cout << "Имя: " << worstStudent->name << "\n";
+    std::cout << "Средний балл: " << worstStudent->gpa << "\n\n";
+}
+
 int main() {
     std::vector<Student> database;
 
