@@ -36,6 +36,25 @@ void displayStudents(const std::vector<Student>& database) {
     }
 }
 
+// Функция для поиска студента с наивысшим средним баллом
+void findStudentWithHighestGpa(const std::vector<Student>& database) {
+    if (database.empty()) {
+        std::cout << "База данных пуста.\n";
+        return;
+    }
+
+    const Student* bestStudent = &database[0];
+    for (const Student& student : database) {
+        if (student.gpa > bestStudent->gpa) {
+            bestStudent = &student;
+        }
+    }
+
+    std::cout << "Студент с наивысшим средним баллом:\n";
+    std::cout << "Имя: " << bestStudent->name << "\n";
+    std::cout << "Средний балл: " << bestStudent->gpa << "\n\n";
+}
+
 int main() {
     std::vector<Student> database;
 
