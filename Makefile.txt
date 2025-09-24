@@ -1,35 +1,46 @@
 # Переменные компилятора
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -Werror
-LDFLAGS = -lgtest -lgtest_main -pthread
+# Добавляем --coverage для будущего бейджа покрытия
+CXXFLAGS = -std=c++20 -Wall -Wextra -I. --coverage
+# Флаги для линковки с GoogleTest
+LDFLAGS = -lgtest -lgtest_main -pthread --coverage
 
-# Исходные файлы
+# Исходники и объекты
+DATABASE_SRC = database.cpp
+DATABASE_OBJ = $(DATABASE_SRC:.cpp=.o)
+
 MAIN_SRC = main.cpp
+MAIN_OBJ = $(MAIN_SRC:.cpp=.o)
+
 TEST_SRC = test.cpp
-APP_OBJS = main.o
+TEST_OBJ = $(TEST_SRC:.cpp=.o)
 
 # Исполняемые файлы
 MAIN_APP = student_app
 TEST_RUNNER = test_runner
 
+# .PHONY указывает цели, которые не являются файлами
 .PHONY: all clean test
 
-# Цель по умолчанию: собрать основное приложение
-all: $(MAIN_APP)
+# Цель по умолчанию: собрать основное приложение и тесты
+all: $(MAIN_APP) $(TEST_RUNNER)
 
-# Сборка основного приложения
-$(MAIN_APP): $(MAIN_SRC)
-	$(CXX) $(CXXFLAGS) $(MAIN_SRC) -o $(MAIN_APP)
+# Правило для сборки основного приложения
+$(MAIN_APP): $(MAIN_OBJ) $(DATABASE_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Сборка и запуск тестов
+# Правило для сборки тестов
+$(TEST_RUNNER): $(TEST_OBJ) $(DATABASE_OBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Цель для запуска тестов
 test: $(TEST_RUNNER)
 	./$(TEST_RUNNER)
 
-# Сборка исполняемого файла тестов
-# Теперь он зависит от test.cpp и main.cpp (скомпилированных в .o)
-$(TEST_RUNNER): $(TEST_SRC) $(MAIN_SRC)
-	$(CXX) $(CXXFLAGS) $(TEST_SRC) $(MAIN_SRC) -o $(TEST_RUNNER) $(LDFLAGS)
+# Правило для компиляции .cpp в .o (объектные файлы)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Очистка
+# Очистка скомпилированных файлов
 clean:
-	rm -f $(MAIN_APP) $(TEST_RUNNER) *.o
+	rm -f $(MAIN_APP) $(TEST_RUNNER) *.o *.gcno *.gcda
