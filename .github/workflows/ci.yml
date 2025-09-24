@@ -19,18 +19,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential libgtest-dev cmake
 
-    - name: Build and install GoogleTest properly
+    - name: Build GoogleTest manually
       run: |
-        cd /usr/src/gtest
-        sudo mkdir -p build && cd build
-        sudo cmake ..
+        cd /usr/src/googletest
+        sudo cmake .
         sudo make
-        sudo make install
-        # Или альтернативно:
-        # sudo cp lib/libgtest*.a /usr/lib/
+        # Копируем библиотеки в стандартное место
+        sudo cp googletest/lib*.a /usr/lib/ 2>/dev/null || sudo cp lib/libgtest*.a /usr/lib/
+        # Альтернативно, если библиотеки в другом месте:
+        find . -name "libgtest*.a" -exec sudo cp {} /usr/lib/ \;
 
     - name: Build application and tests
       run: make test
-
-    - name: Run tests
-      run: ./test_runner
