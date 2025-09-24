@@ -1,33 +1,60 @@
-# Полное отключение всех встроенных правил
+# Полное отключение встроенных правил Make
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 .SUFFIXES:
 
-# Явное объявление всех переменных
-CXX := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra
-COVERAGE_FLAGS := --coverage
-GTEST_LIBS := -lgtest -lgtest_main -pthread
+# Переменные компиляции
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra
+COVERAGE_FLAGS = --coverage
+GTEST_LIBS = -lgtest -lgtest_main -pthread
 
-.PHONY: all app run-tests clean
+# Исходные файлы
+MAIN_SOURCES = main.cpp database.cpp
+TEST_SOURCES = test.cpp database.cpp
 
+# Исполняемые файлы
+APP_TARGET = student_app
+TEST_TARGET = test_runner
+
+# PHONY цели
+.PHONY: all app run-tests clean help
+
+# Цель по умолчанию
 all: app
 
-app:
-	g++ -std=c++20 -Wall -Wextra -o student_app main.cpp database.cpp
+# Справка
+help:
+	@echo "Доступные цели:"
+	@echo "  all       - собрать основное приложение (по умолчанию)"
+	@echo "  app       - собрать основное приложение"
+	@echo "  run-tests - собрать и запустить тесты"
+	@echo "  clean     - удалить все скомпилированные файлы"
+	@echo "  help      - показать эту справку"
 
-# Уникальное имя target'а с дефисом (встроенных правил для таких имен нет)
-run-tests:
-	g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -lgtest_main -pthread
-	./test_runner
+# Сборка основного приложения
+app: $(APP_TARGET)
 
+$(APP_TARGET): $(MAIN_SOURCES)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Сборка и запуск тестов
+run-tests: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+$(TEST_TARGET): $(TEST_SOURCES)
+	$(CXX) $(CXXFLAGS) $(COVERAGE_FLAGS) -o $@ $^ $(GTEST_LIBS)
+
+# Очистка
 clean:
-	rm -f student_app test_runner *.gcno *.gcda
+	rm -f $(APP_TARGET) $(TEST_TARGET) *.gcno *.gcda *.gcov
 
-# Явно блокируем встроенное правило для test
-test.cpp:
-	@echo "Blocking implicit rule for test.cpp"
-
-# Дополнительная защита - если Make все еще пытается использовать встроенные правила
+# Дополнительная защита от встроенных правил
 %: %.cpp
-	@echo "Blocked implicit compilation rule for $@"
+	@echo "Встроенное правило заблокировано для $@"
+	@false
+
+# Блокировка конкретного встроенного правила для test
+test:
+	@echo "Использование встроенного правила 'test' заблокировано"
+	@echo "Используйте 'make run-tests' для запуска тестов"
 	@false
