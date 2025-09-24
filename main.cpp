@@ -1,13 +1,5 @@
-#include <iostream>
-#include <vector>
-#include <string>
-
-struct Student {
-    std::string name;
-    int age;
-    std::string major;
-    double gpa;
-};
+#include "database.h" // Подключаем наш новый заголовочный файл
+#include <limits> // Был в предыдущей версии, оставляем
 
 // Функция для добавления студента в базу данных
 void addStudent(std::vector<Student>& database) {
@@ -28,6 +20,10 @@ void addStudent(std::vector<Student>& database) {
 // Функция для вывода всех студентов из базы данных
 void displayStudents(const std::vector<Student>& database) {
     std::cout << "Список студентов:\n";
+    if (database.empty()) {
+        std::cout << "База данных пуста.\n\n";
+        return;
+    }
     for (const Student& student : database) {
         std::cout << "Имя: " << student.name << "\n";
         std::cout << "Возраст: " << student.age << "\n";
@@ -74,6 +70,7 @@ void findStudentWithLowestGpa(const std::vector<Student>& database) {
     std::cout << "Средний балл: " << worstStudent->gpa << "\n\n";
 }
 
+// Функция main остается здесь
 int main() {
     std::vector<Student> database;
 
