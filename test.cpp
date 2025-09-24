@@ -6,6 +6,7 @@
 // Подключаем код из main.cpp для доступа к структурам и функциям
 #include "main.cpp" 
 
+
 // Тест для поиска студента с наивысшим баллом
 TEST(StudentDBTest, FindHighestGpa_BasicTest) {
     std::vector<Student> db = {
@@ -51,6 +52,18 @@ TEST(StudentDBTest, FindGpa_EmptyDatabase) {
     ASSERT_NO_THROW(findStudentWithLowestGpa(db));
 }
 
+
+// Тест для базы с одним студентом
+TEST(StudentDBTest, FindGpa_SingleStudent) {
+    std::vector<Student> db = {{"Dave", 23, "CS", 4.0}};
+    const Student* bestStudent = &db[0];
+    const Student* worstStudent = &db[0];
+    
+    ASSERT_EQ(bestStudent->name, "Dave");
+    ASSERT_DOUBLE_EQ(bestStudent->gpa, 4.0);
+    ASSERT_EQ(worstStudent->name, "Dave");
+    ASSERT_DOUBLE_EQ(worstStudent->gpa, 4.0);
+}
 
 
 int main(int argc, char **argv) {
