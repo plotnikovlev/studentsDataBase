@@ -30,5 +30,5 @@ jobs:
         find . -name "libgtest*.a" -exec sudo cp {} /usr/lib/ \;
 
     - name: Build application and tests
-      run: make run_tests
+      run: make tests
 
