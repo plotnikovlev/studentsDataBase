@@ -1,17 +1,33 @@
-.PHONY: all app run_tests clean
+# Полное отключение всех встроенных правил
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
+.SUFFIXES:
 
-# Цель по умолчанию: собрать основное приложение
+# Явное объявление всех переменных
+CXX := g++
+CXXFLAGS := -std=c++20 -Wall -Wextra
+COVERAGE_FLAGS := --coverage
+GTEST_LIBS := -lgtest -lgtest_main -pthread
+
+.PHONY: all app run-tests clean
+
 all: app
 
-# Цель для сборки основного приложения
 app:
 	g++ -std=c++20 -Wall -Wextra -o student_app main.cpp database.cpp
 
-# Цель для сборки И ЗАПУСКА тестов (переименованная)
-run_tests:
+# Уникальное имя target'а с дефисом (встроенных правил для таких имен нет)
+run-tests:
 	g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -lgtest_main -pthread
 	./test_runner
 
-# Цель для очистки
 clean:
 	rm -f student_app test_runner *.gcno *.gcda
+
+# Явно блокируем встроенное правило для test
+test.cpp:
+	@echo "Blocking implicit rule for test.cpp"
+
+# Дополнительная защита - если Make все еще пытается использовать встроенные правила
+%: %.cpp
+	@echo "Blocked implicit compilation rule for $@"
+	@false
