@@ -6,6 +6,7 @@ LDFLAGS = -lgtest -lgtest_main -pthread
 # Исходные файлы
 MAIN_SRC = main.cpp
 TEST_SRC = test.cpp
+APP_OBJS = main.o
 
 # Исполняемые файлы
 MAIN_APP = student_app
@@ -25,9 +26,10 @@ test: $(TEST_RUNNER)
 	./$(TEST_RUNNER)
 
 # Сборка исполняемого файла тестов
-$(TEST_RUNNER): $(TEST_SRC)
-	$(CXX) $(CXXFLAGS) $(TEST_SRC) $(LDFLAGS) -o $(TEST_RUNNER)
+# Теперь он зависит от test.cpp и main.cpp (скомпилированных в .o)
+$(TEST_RUNNER): $(TEST_SRC) $(MAIN_SRC)
+	$(CXX) $(CXXFLAGS) $(TEST_SRC) $(MAIN_SRC) -o $(TEST_RUNNER) $(LDFLAGS)
 
 # Очистка
 clean:
-	rm -f $(MAIN_APP) $(TEST_RUNNER)
+	rm -f $(MAIN_APP) $(TEST_RUNNER) *.o
