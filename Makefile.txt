@@ -14,7 +14,7 @@ app:
 # Шаг 1: Компилирует test.cpp и database.cpp, линкует с gtest и создает test_runner
 # Шаг 2: Сразу же запускает созданный test_runner
 test:
-	g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -lgtest_main -pthread
+	g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -pthread
 	./test_runner
 
 # Цель для очистки
