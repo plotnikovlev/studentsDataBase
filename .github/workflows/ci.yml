@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "main" ] # Можете заменить "main" на "master" в зависимости от имени вашей основной ветки
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -19,13 +19,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential libgtest-dev cmake
 
-    - name: Build GoogleTest
-      # GoogleTest нужно скомпилировать перед использованием
+    - name: Build and install GoogleTest properly
       run: |
         cd /usr/src/gtest
-        sudo cmake .
+        sudo mkdir -p build && cd build
+        sudo cmake ..
         sudo make
-        sudo mv lib/libgtest* /usr/lib/
+        sudo make install
+        # Или альтернативно:
+        # sudo cp lib/libgtest*.a /usr/lib/
 
     - name: Build application and tests
       run: make test
