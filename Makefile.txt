@@ -1,37 +1,23 @@
-# Переменные компилятора
-CXX = g++
-# Флаги компиляции, включая --coverage для отчетов
-CXXFLAGS = -std=c++20 -Wall -Wextra --coverage
-# Флаги компоновщика для линковки с библиотеками gtest и pthread
-LDFLAGS = -lgtest -lgtest_main -pthread
+# Makefile:
 
-# Исполняемые файлы
-MAIN_APP = student_app
-TEST_RUNNER = test_runner
+.PHONY: all app test clean
 
-# Исходные файлы
-SOURCES = main.cpp database.cpp
-TEST_SOURCES = test.cpp database.cpp
+# Цель по умолчанию: собрать основное приложение
+all: app
 
-# .PHONY указывает цели, которые не являются реальными файлами
-.PHONY: all clean test
+# Цель для сборки основного приложения (student_app)
+# Просто берет main.cpp и database.cpp и создает из них student_app
+app:
+	g++ -std=c++20 -Wall -Wextra -o student_app main.cpp database.cpp
 
-# Цель по умолчанию
-all: $(MAIN_APP)
+# Цель для сборки И ЗАПУСКА тестов (именно ее вызывает GitHub Actions)
+# Шаг 1: Компилирует test.cpp и database.cpp, линкует с gtest и создает test_runner
+# Шаг 2: Сразу же запускает созданный test_runner
+test:
+	g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -lgtest_main -pthread
+	./test_runner
 
-# Правило для сборки основного приложения
-$(MAIN_APP): $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $(MAIN_APP) $(SOURCES)
-
-# Правило для сборки и запуска тестов
-test: $(TEST_RUNNER)
-	./$(TEST_RUNNER)
-
-# Правило для сборки исполняемого файла тестов.
-# Здесь мы явно компилируем все нужные исходники и добавляем флаги линковки.
-$(TEST_RUNNER): $(TEST_SOURCES)
-	$(CXX) $(CXXFLAGS) -o $(TEST_RUNNER) $(TEST_SOURCES) $(LDFLAGS)
-
-# Очистка
+# Цель для очистки
 clean:
-	rm -f $(MAIN_APP) $(TEST_RUNNER) *.o *.gcno *.gcda
+	rm -f student_app test_runner *.gcno *.gcda
+
