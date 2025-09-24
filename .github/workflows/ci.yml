@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Добавляем права для push
+permissions:
+  contents: write
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libgtest-dev cmake
+        sudo apt-get install -y build-essential libgtest-dev cmake lcov
 
     - name: Build GoogleTest
       run: |
@@ -30,7 +34,37 @@ jobs:
     - name: Build application
       run: g++ -std=c++20 -Wall -Wextra -o student_app main.cpp database.cpp
 
-    - name: Build and run tests
+    - name: Build and run tests with coverage
       run: |
         g++ -std=c++20 -Wall -Wextra --coverage -o test_runner test.cpp database.cpp -lgtest -lgtest_main -pthread
         ./test_runner
+
+    - name: Generate coverage badge
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Генерируем отчет покрытия
+        lcov --capture --directory . --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/gtest/*' --output-file coverage.info
+        
+        # Извлекаем процент покрытия (простой способ)
+        COVERAGE=$(lcov --summary coverage.info 2>/dev/null | grep -o '[0-9.]*%' | head -1 | sed 's/%//')
+        echo "Coverage: ${COVERAGE}%"
+        
+        # Определяем цвет (простой способ без bc)
+        if [ "${COVERAGE%.*}" -le "50" ]; then
+          COLOR="red"
+        elif [ "${COVERAGE%.*}" -ge "80" ]; then
+          COLOR="brightgreen"
+        else
+          COLOR="orange"
+        fi
+        
+        # Создаем бейджик
+        curl -s "https://img.shields.io/badge/coverage-${COVERAGE}%25-${COLOR}" > coverage-badge.svg
+        
+        # Коммитим если есть изменения
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add coverage-badge.svg
+        git diff --staged --quiet || git commit -m "Update coverage badge [skip ci]"
+        git push origin main || echo "No changes to push"
