@@ -1,4 +1,33 @@
-all:
-	g++ -std=c++20 main.cpp -o a.out
+# Переменные компилятора
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -Werror
+LDFLAGS = -lgtest -lgtest_main -pthread
+
+# Исходные файлы
+MAIN_SRC = main.cpp
+TEST_SRC = test.cpp
+
+# Исполняемые файлы
+MAIN_APP = student_app
+TEST_RUNNER = test_runner
+
+.PHONY: all clean test
+
+# Цель по умолчанию: собрать основное приложение
+all: $(MAIN_APP)
+
+# Сборка основного приложения
+$(MAIN_APP): $(MAIN_SRC)
+	$(CXX) $(CXXFLAGS) $(MAIN_SRC) -o $(MAIN_APP)
+
+# Сборка и запуск тестов
+test: $(TEST_RUNNER)
+	./$(TEST_RUNNER)
+
+# Сборка исполняемого файла тестов
+$(TEST_RUNNER): $(TEST_SRC)
+	$(CXX) $(CXXFLAGS) $(TEST_SRC) $(LDFLAGS) -o $(TEST_RUNNER)
+
+# Очистка
 clean:
-	rm a.out
+	rm -f $(MAIN_APP) $(TEST_RUNNER)
