@@ -2,19 +2,19 @@
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 .SUFFIXES:
 
-# Переменные компиляции
-CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra
-COVERAGE_FLAGS = --coverage
-GTEST_LIBS = -lgtest -lgtest_main -pthread
+# Переменные компиляции (используем := для немедленного расширения)
+CXX := g++
+CXXFLAGS := -std=c++20 -Wall -Wextra
+COVERAGE_FLAGS := --coverage
+GTEST_LIBS := -lgtest -lgtest_main -pthread
 
 # Исходные файлы
-MAIN_SOURCES = main.cpp database.cpp
-TEST_SOURCES = test.cpp database.cpp
+MAIN_SOURCES := main.cpp database.cpp
+TEST_SOURCES := test.cpp database.cpp
 
 # Исполняемые файлы
-APP_TARGET = student_app
-TEST_TARGET = test_runner
+APP_TARGET := student_app
+TEST_TARGET := test_runner
 
 # PHONY цели
 .PHONY: all app run-tests clean help
