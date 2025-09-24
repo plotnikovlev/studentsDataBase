@@ -42,6 +42,16 @@ TEST(StudentDBTest, FindLowestGpa_BasicTest) {
 }
 
 
+// Тест для пустой базы данных
+TEST(StudentDBTest, FindGpa_EmptyDatabase) {
+    std::vector<Student> db;
+    // Функции в текущем виде выводят в cout. В идеале они должны возвращать optional<Student> или nullptr
+    // Мы предполагаем, что они не должны падать или вызывать неопределенное поведение
+    ASSERT_NO_THROW(findStudentWithHighestGpa(db));
+    ASSERT_NO_THROW(findStudentWithLowestGpa(db));
+}
+
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
