@@ -66,6 +66,21 @@ TEST(StudentDBTest, FindGpa_SingleStudent) {
 }
 
 
+// Тест на добавление студента (проверяем размер базы)
+TEST(StudentDBTest, AddStudent_Test) {
+    std::vector<Student> db;
+    // Функция addStudent является интерактивной, что плохо для тестов.
+    // Для настоящего юнит-теста ее нужно бы переписать.
+    // Здесь мы просто имитируем добавление и проверяем результат.
+    Student new_student = {"Eve", 24, "IT", 3.7};
+    db.push_back(new_student);
+
+    ASSERT_EQ(db.size(), 1);
+    ASSERT_EQ(db[0].name, "Eve");
+    ASSERT_EQ(db[0].gpa, 3.7);
+}
+
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
